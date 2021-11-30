@@ -57,7 +57,6 @@ pod install
  
 ## 2장: 컴포넌트
 ### 요약
-- 리액트 네이티브는 순수 css는 먹히지 않고 `StyleSheet`를 사용해서 css 적용
 - 리액트 네이티브에서 `display` `flex`와 `none` 밖에 없고 기본 `flex`이다
 - `flex-direction`의 기본이 웹 처럼 `row` 가 아닌 `column`이다
 - `border`옵션을 통으로 지정할수 없고 `borderWidth`, `borderStyle`, `borderColor`를 별도 지정해주어야 한다
