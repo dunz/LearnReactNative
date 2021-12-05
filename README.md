@@ -83,25 +83,83 @@ pod install
 - `useSafeAreaInsets` 훅으로 디바이스별 StatusBar 높이를 구할수 있다. (return: `{top, bottom, left, right}`)
   - 해당높이만큼 빈 View의 height를 지정해주거나 상단 컴포넌트의 padding 값을 주는 식으로 처리
 
-시뮬레이터 디바이스 추가
+#### 시뮬레이터 디바이스 추가
 - `xcrun simctl list devices`로 리스트 내역 보기
 - `yarn react-native run-ios --simulator="iPhone 13 mini"`로 시뮬레이터 추가 실행
 - android 의 경우 Android Virtual Device Manager의 Create Virtual Device 실행
 
-아이폰 키보드 가리지 않게 설정
+#### 아이폰 키보드 가리지 않게 설정
 - `KeyboardAvoidingView`사용하여 아이폰의 경우 `behavior`(`poadding`|`height`|`position`) props을 추가한다.
 - `Plastform.OS` (`android`|`ios`)을 사용하여 OS를 체크할수있다.
 - `Platform.select({ios: 'padding', android: undefined})`를 사용하여 객체로 os별 값을 직관적으로 반환할수 있다.
 - `Keyboard.dismiss()`: 키보드 닫기
 
-버튼 설정 컴포넌트
+#### 버튼 설정 컴포넌트
 - `TouchableOpacity`: 터치했을때 투명도 (props: `activeOpacity: number (0.2)`)
 - `TouchableNativeFeedback`: 안드로이드 물결효과 (ios 에서는 오류 발생, 분기 필요)
 
-폼
+#### 폼
 - `onSubmitEditing` 이벤트는 Enter(return) 누를때 발생하는 이벤트
 - `returnKeyType` Enter 버튼 타입을 변경한다. (OS별 지원하지 않는값 적용시 오류 나므로 분기 필요)
   - 공통: `done`|`go`|`next`|`search`|`send`
   - IOS: `default`|`emergency-call`|`google`|`join`|`route`|`yahoo`
   - Android: `none`|`previos`
-    
+  
+## 4장 할일 목록 만들기 II
+### 요약
+
+#### 리스트
+- `FlatList`로 리스트 UI를 만들수 있다
+  - `data`: 리스트 데이터
+  - `renderItem({item, index, separators})`: 랜더링할 리스트 어이템 컴포넌트 반환 콜백 함수
+  - `keyExtractor(item)`: 리스트 아이템 키 반환 콜백 함수
+  - `ItemSeparatorComponent({highlighted, leadingItem})`: 리스트 구분자 컴포넌트 반환 콜백 함수
+
+#### react-native-vector-icons
+> 오픈소스 벡터 아이콘을 리액트 네이티브 프로젝트에서 간편하게 컴포넌트처럼 사용할수있는 라이브러리
+
+##### UIAppFonts 속성 추가
+
+###### IOS
+`ios/[프로젝트명]/info.plist`
+> `.plist 파일`: ios 앱의 프로퍼티 리스트 파일로 앱의 이름, 아이콘, 버전 등 앱에서 필요한 설정값을 가짐 
+
+```plist
+<dict>
+...
+  <key>UIAppFonts</key>
+  <array>
+      <string>MaterialIcons.ttf</string>
+  </array>
+</<dict>
+```
+
+###### Android
+`android/app/build.gradle`
+> `build.gradle`: 안드로이드의 범용 빌드 도구인 Gradle에서 사용하는 파일로 프로젝트의 의존성 플러그인 및 빌드에 필요한 설정에 대한 정보를 가짐
+
+```gradle
+...
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+``` 
+
+#### Alert 컴포넌트
+> `Alert.aert`
+
+- 제목, 내용, 버튼배열, 옵션객체 순서의 파라미터
+- 버튼배열내 객체는 `title`, `onPress`, `style`(`default`|`cancel`|`destructive`) (ios 용)
+- 옵션객체 내 `cancelable`(android용): 안드로이드에서 Alert 박스 바깥 터치시 닫히도록 설정
+- 옵션객체 내 `onDismiss`(android용): 바깥 터치로 닫힌 후 실행되는 콜백함수
+
+#### @react-native-community/async-storage
+> 리액트 네이티ㅡ에서 사용할 수 있는 key-value 형식의 저장소(브라우저에서의 localStorage와 비슷)
+- Android 기본용량: `6MB`
+- IOS는 용량제한이 없다
+- 소규모 데이터를 다룰때 사용하는것이 좋고 데이터의 규모가 커지면 성능이 떨어진다
+- 데이터의 규모가 커졌을때는 `realm`이나 `react-native-sqlite-storage`(인덱싱 기능 지원)가 있다
+
+Android 기본 용량늘리기: `gradle.properties`
+```properties
+AsyncStorage_db_size_in_MB=10
+```
+
