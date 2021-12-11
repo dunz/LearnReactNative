@@ -163,3 +163,65 @@ Android 기본 용량늘리기: `gradle.properties`
 AsyncStorage_db_size_in_MB=10
 ```
 
+## 5장 리액트 내비게이션으로 여러 화면 관리하기
+시작하기에 앞서 모멘토리로 OS 버전업을 한 후 에러 발생 해결 방법
+
+에러 : 
+```sh
+info Found Xcode workspace "LearnReactNative.xcworkspace"
+2021-12-11 21:42:24.516 simctl[32229:1209695] CoreSimulator detected version change.  Framework version (776.4) does not match existing job version (776.3).  Attempting to remove the stale service in order to add the expected version.
+error Could not get the simulator list from Xcode. Please open Xcode and try running project directly from there to resolve the remaining issues.
+SyntaxError: Unexpected token I in JSON at position 0
+```
+
+> `LearnReactNative.xcworkspace` 파일을 찾아서 직접 실행만 한번 해주면 해결된다.
+
+### 요약
+- 리액트 네이티브 앱에서는 화면을 전환할 때 브라우저의 History와 비슷한 사용성을 제공하기 위해 **네이티브 스태 내비게이터**를 사용한다
+- 네비게이션 처리를 위해 필요한 라이브러리
+  - `@react-navigation/native`: 자바스크립트로 구현되어있는 네비게이션
+    - `react-native-screens`: 스크린 화면 정의
+    - `react-native-safe-area-context`: Safe Area 매니저
+  - `@react-navigation/native-stack`: 네이티브 스택 네비게이터
+  - `@react-navigation/drawer` : 사이드바를 사용하기 위한 네비게이터 
+    - `react-native-gesture-handler` : 사용자 제스처를 인식하기 위해 내부적으로 사용
+    - `react-native-reanimated` : 리액트 네이티브 애니메이션 효과보다 더욱 개선된 성능
+  - `@react-navigation/bottom-tabs` : 하단 탭 네비게이터
+    - `react-native-vector-icons`
+  - `@react-navigation/material-top-tabs` : 머터리얼 상단 탭 네비게이터
+    - `react-native-tab-view` : 리액트 네이티브에서 탭 구현
+    - `react-native-pager-view`
+  - `@react-navigation/material-bottom-tabs` : 머터리얼 하단 탭 네비게이터
+    - `react-native-paper`
+- 스크린 name이 자동으로 상단에 타이틀로 붙고 스택이 쌓이면 자동으로 뒤로가기 버튼이 노출된다
+- 포커스, 언포커스 를 캐치하려면 `useFocusEffect` 사용 (`useCallback`으로 감싸서 리렌더링 시마다 호출되지 않도록 한다)
+```jsx
+useFocusEffect(
+    useCallback(() => {
+      console.log('home focus');
+      return () => {
+        console.log('home unfocus ');
+      };
+    }, []),
+  ); 
+```
+
+#### navigation
+- push는 같은 스크린도 스택을 추가함 (native-stack 네비게이터 에만 존재)
+- navigate 는 스크린이 같으면 스택을 추가하지 않음
+
+#### Stack.Screen options
+- name
+- component
+- options
+  - title
+  - headerStyle : 헤더 스타일
+  - headerTintColor : 헤더 타이틀 색상
+  - headerTitleStyle : 헤더 타이틀 스타일
+  - headerLeft : 왼쪽 노출할 컴포넌트
+  - headerTitle : 가운데 노출할 컴포넌트
+  - headerRight : 오른쪽 노출할 컴포넌트
+  - headerBackVisible (false) : back 버튼 제거
+
+
+

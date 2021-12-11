@@ -1,80 +1,134 @@
-import React, {useEffect, useState} from 'react';
-import {DateHead} from './components/Todo/DateHead';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-import {AddTodo} from './components/Todo/AddTodo';
-import {Empty} from './components/Todo/Empty';
-import {KeyboardAvoidingView, Platform, StyleSheet} from 'react-native';
-import {TodoList} from './components/Todo/TodoList';
-import todosStorage from './storages/todosStorage';
+import React from 'react';
+import {
+  getFocusedRouteNameFromRoute,
+  NavigationContainer,
+} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {HomeScreen} from './screens/HomeScreen';
+import {DetailScreen} from './screens/DetailScreen';
+import {Button, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {HeaderLessScreen} from './screens/HeaderLessScreen';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {SettingScreen} from './screens/SettingScreen';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NotificationScreen} from './screens/NotificationScreen';
+import {MessageScreen} from './screens/MessageScreen';
+import {SearchScreen} from './screens/SearchScreen';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {MainScreen} from './screens/MainScreen';
 
-const App = () => {
-  const today = new Date();
-  const [todos, setTodos] = useState([
-    {id: 1, text: '작업환경 설정', done: true},
-    {id: 2, text: '리액트 네이티브 기초 공부', done: false},
-    {id: 3, text: '투두리스트 만들어보기', done: false},
-  ]);
+const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
-  const onInsert = text => {
-    const nextId =
-      todos.length > 0 ? Math.max(...todos.map(todo => todo.id)) + 1 : 1;
-    setTodos(
-      todos.concat({
-        id: nextId,
-        text,
-        done: false,
-      }),
-    );
+const getHeaderTitle = route => {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
+  const nameMap = {
+    Home: '홈3',
+    Search: '검색3',
+    Notification: '알림3',
+    Message: '메시지3',
   };
-
-  const onToggle = id => {
-    const nextTodos = todos.map(todo =>
-      todo.id === id ? {...todo, done: !todo.done} : todo,
-    );
-    setTodos(nextTodos);
-  };
-
-  const onRemove = id => {
-    const nextTodos = todos.filter(todo => todo.id !== id);
-    setTodos(nextTodos);
-  };
-
-  useEffect(() => {
-    todosStorage.get().then(setTodos).catch(console.error);
-  }, []);
-
-  // 저장
-  useEffect(() => {
-    todosStorage.set(todos).catch(console.error);
-  }, [todos]);
-
-  return (
-    <SafeAreaProvider>
-      <SafeAreaView edges={['bottom']} style={styles.block}>
-        <KeyboardAvoidingView
-          behavior={Platform.select({ios: 'padding'})}
-          style={styles.avoid}>
-          <DateHead date={today} />
-          {todos.length === 0 ? (
-            <Empty />
-          ) : (
-            <TodoList todos={todos} onToggle={onToggle} onRemove={onRemove} />
-          )}
-          <AddTodo onInsert={onInsert} />
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </SafeAreaProvider>
-  );
+  return nameMap[routeName];
 };
 
-const styles = StyleSheet.create({
-  block: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  avoid: {
-    flex: 1,
-  },
-});
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {/*<Stack.Screen*/}
+        {/*  name="Home"*/}
+        {/*  component={HomeScreen}*/}
+        {/*  options={{*/}
+        {/*    headerShown: true,*/}
+        {/*    title: '홈',*/}
+        {/*    headerStyle: {backgroundColor: 'red'},*/}
+        {/*    headerTintColor: 'white',*/}
+        {/*    headerTitleStyle: {*/}
+        {/*      fontWeight: 'bold',*/}
+        {/*      fontSize: 20,*/}
+        {/*    },*/}
+        {/*  }}*/}
+        {/*/>*/}
+        {/*<Stack.Screen*/}
+        {/*  name="Detail"*/}
+        {/*  component={DetailScreen}*/}
+        {/*  options={({route}) => ({*/}
+        {/*    title: `상세 정보 - ${route.params.id}`,*/}
+        {/*    headerStyle: {backgroundColor: 'red'},*/}
+        {/*    headerTintColor: 'white',*/}
+        {/*    headerTitleStyle: {*/}
+        {/*      fontWeight: 'bold',*/}
+        {/*      fontSize: 20,*/}
+        {/*    },*/}
+        {/*    headerLeft: ({onPress}) => (*/}
+        {/*      <TouchableOpacity onPress={onPress}>*/}
+        {/*        <Text>Left</Text>*/}
+        {/*      </TouchableOpacity>*/}
+        {/*    ),*/}
+        {/*    headerTitle: ({children}) => (*/}
+        {/*      <View>*/}
+        {/*        <Text>{children}</Text>*/}
+        {/*      </View>*/}
+        {/*    ),*/}
+        {/*    headerRight: () => (*/}
+        {/*      <View>*/}
+        {/*        <Text>Right</Text>*/}
+        {/*      </View>*/}
+        {/*    ),*/}
+        {/*    headerBackVisible: false,*/}
+        {/*  })}*/}
+        {/*/>*/}
+        {/*<Stack.Screen*/}
+        {/*  name="HeaderLess"*/}
+        {/*  component={HeaderLessScreen}*/}
+        {/*  options={{headerShown: false}}*/}
+        {/*/>*/}
+
+        <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          options={({route}) => ({
+            headerShown: true,
+            title: getHeaderTitle(route),
+          })}
+        />
+        <Stack.Screen name="Detail" component={DetailScreen} />
+      </Stack.Navigator>
+
+      {/*<Drawer.Navigator*/}
+      {/*  initialRouteName="Home"*/}
+      {/*  drawerPosition="left"*/}
+      {/*  backBehavior="history"*/}
+      {/*  screenOptions={{*/}
+      {/*    drawerActiveBackgroundColor: 'orange',*/}
+      {/*    drawerActiveTintColor: 'white',*/}
+      {/*    headerShown: false,*/}
+      {/*  }}*/}
+      {/*  drawerContent={({navigation}) => (*/}
+      {/*    <SafeAreaView>*/}
+      {/*      <Text>A Custom Drawer</Text>*/}
+      {/*      <Button*/}
+      {/*        title="Drawer 닫기"*/}
+      {/*        onPress={() => navigation.closeDrawer()}*/}
+      {/*      />*/}
+      {/*    </SafeAreaView>*/}
+      {/*  )}>*/}
+      {/*  <Drawer.Screen*/}
+      {/*    name="Home"*/}
+      {/*    component={HomeScreen}*/}
+      {/*    options={{*/}
+      {/*      title: '홈',*/}
+      {/*      headerLeft: () => <Text>Left</Text>,*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*  <Drawer.Screen*/}
+      {/*    name="Setting"*/}
+      {/*    component={SettingScreen}*/}
+      {/*    options={{title: '설정'}}*/}
+      {/*  />*/}
+      {/*</Drawer.Navigator>*/}
+    </NavigationContainer>
+  );
+};
 
 export default App;
