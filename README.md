@@ -224,4 +224,62 @@ useFocusEffect(
   - headerBackVisible (false) : back 버튼 제거
 
 
+## 6장 다이어리앱 만들기
+- android_ripple: 안드로이드에서 물결효과 스타일
 
+- 고유한 값을 생성해주는 uuid 라이브러리 사용
+- uuid는 Node.js의 cryptorlsmddmf 사용하는데 리액트 네이티브에는 이 기능이 기본적으로 내장되어 있지 않기 때문에 uuid가 정상 작동하도록 react-native-get-random-values를 설치해 호환시켜야 한다
+```sh
+yarn add uuid
+yarn add react-native-get-random-values
+```
+
+- 날짜 포맷팅 라이브러리 설치
+```sh
+yarn add date-fns
+```
+
+- 애니메이션 활용하려면 Animated 를 useRef와 함께 사용한다
+- 애니메이션 실행할때는 timing 함수와 start 사용
+- 통통 튀기는 효과를 주고싶을때는 timing이 아닌 spring 으로 사용
+```jsx
+const animation = useRef(new Animated.Value(0)).current;
+useEffect(() => {
+  Animated.timing(animation, {
+    toValue: 1,
+    useNativeDriver: true
+  }).start()
+})
+// sptring
+useEffect(() => {
+  Animated.timing(animation, {
+    toValue: 1,
+    useNativeDriver: true,
+    
+    tension: 40,  // 강도
+    friction: 7,  // 감속 ( 이 두가지 옵션을 같이 사용 )
+    
+    spped: 12,    // 속도
+    bounciness: 8 // 탄력성  ( 이 두가지 옵션을 같이 사용 )
+  }).start()
+})
+return <Animated.View style={{opacity: animation}}>
+```
+- input값에 따라 다양한 out을 사용하려면 anmation 지정하면서 interpolate 함수 적용
+```jsx
+return <Animated.View style={{
+  transform: [
+    {
+      translateX: animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 150]
+      })
+    }
+  ],
+  opacity: animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0]
+  }) 
+}}
+```
+- 엘리먼트가 바닥에 닿았음을 확인하고 싶을때는 `onEndRached`함수와 `onEndReachedThreshold` 값을 사용한다
