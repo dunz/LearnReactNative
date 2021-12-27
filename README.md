@@ -283,3 +283,62 @@ return <Animated.View style={{
 }}
 ```
 - 엘리먼트가 바닥에 닿았음을 확인하고 싶을때는 `onEndRached`함수와 `onEndReachedThreshold` 값을 사용한다
+
+## 7장 다이어리앱 만들기
+### 7.4.2 화면 크기 조회하기
+- 화면 크기를 dp단위로 가져오는 방법은 두가지이다
+  - `Dimentions.get` 사용: 화면 크기가 바뀌는 상황을 집접 대응해야 한다
+    - 전체 화면 크기를 가져오기 위해서는 `Dimentions.get('screen')`을 사용해야 한다 
+  - `useWindowDimensions` Hook 사용: 화면 크기가 바뀌는 상황을 자동으로 반영한다
+
+### 7.4.3 컴포넌트 UI 구성하기
+- 자동 포커싱을 하기 위해서는 TextInput에 `autoFocus`를 사용
+
+### 7.5 달력 기능 구현하기
+- 달력 라이브러리 `react-native-calendars` 설치
+
+### 7.5.1 달력 기능 구현하기
+```jsx
+const markedDates = {
+  '2021-12-17': {
+    selected: true,
+  },
+  '2021-12-18': {
+    marked: true,
+  },
+  '2021-12-19': {
+    marked: true,
+  },
+};
+return (
+  <Calendar
+    style={styles.calendar}
+    markedDates={markedDates}
+    theme={{
+      selectedDayBackgroundColor: '#009688',
+      arrowColor: '#009688',
+      dotColor: '#009688',
+      todayTextColor: '#009688',
+    }}
+  />
+);
+```
+- theme설정은 앱을 리로드해야 반영된다
+
+### 7.6 날짜 및 시간 수정 기능 구현하기
+```sh
+yarn add react-native-modal-datetime-picker @react-native-community/datetimepicker
+```
+- `@react-native-community/datetimepicker`: IOS와 안드로이드 각각 플랫폼에 특화된 날짜/시간 선택 컴포넌트 제공
+- `react-native-modal-datetime-picker`: 날짜/시간 선택 컴포넌트를 모달 형태로 사용할 수 있게 해줌
+
+### 7.6.2 DateTimePickerModal 컴포넌트 사용하기
+```jsx
+<DateTimePickerModal
+  isVisible={state.visible} // 모달 on off
+  mode={state.mode}         // date, time, datetime
+  onConfirm={onConfirm}     // 선택 콜백
+  onCancel={close}          // 취소 콜백
+  date={date}               // 촉기 Date 객체
+/>
+```

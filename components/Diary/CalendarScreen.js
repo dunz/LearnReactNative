@@ -1,20 +1,40 @@
-import React, {useContext} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {useContext, useMemo, useState} from 'react';
+import {CalendarView} from './CalendarView';
 import {LogContext} from './context/LogContext';
+import {format} from 'date-fns';
+import {FeedList} from './FeedList';
 
 export const CalendarScreen = () => {
-  const {text} = useContext(LogContext);
+  const {logs} = useContext(LogContext);
+
+  const [selectedDate, setSelectedDate] = useState(
+    format(new Date(), 'yyyy-MM-dd'),
+  );
+
+  const markedDates = useMemo(
+    () =>
+      logs.reduce((acc, current) => {
+        const formattedDate = format(new Date(current.date), 'yyyy-MM-dd');
+        acc[formattedDate] = {marked: true};
+        return acc;
+      }, {}),
+    [logs],
+  );
+
+  const filteredLogs = logs.filter(
+    log => format(new Date(log.date), 'yyyy-MM-dd') === selectedDate,
+  );
+
   return (
-    <View style={styles.block}>
-      <Text style={styles.text}>text: {text}</Text>
-    </View>
+    <FeedList
+      logs={filteredLogs}
+      ListHeaderComponent={
+        <CalendarView
+          markedDates={markedDates}
+          selectedDate={selectedDate}
+          onSelectedDate={setSelectedDate}
+        />
+      }
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  block: {},
-  text: {
-    padding: 16,
-    fontSize: 24,
-  },
-});
